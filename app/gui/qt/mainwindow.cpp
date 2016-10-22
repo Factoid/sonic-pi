@@ -558,26 +558,8 @@ void MainWindow::setupWindowStructure() {
   errorPane->setMaximumHeight(130);
   errorPane->setMinimumHeight(130);
 
-  // hudPane = new QTextBrowser;
-  // hudPane->setMinimumHeight(130);
-  // hudPane->setHtml("<center><img src=\":/images/logo.png\" height=\"113\" width=\"138\"></center>");
-  // hudPane->setStyleSheet(defaultTextBrowserStyle);
-  // hudWidget = new QDockWidget(this);
-  // hudWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
-  // hudWidget->setAllowedAreas(Qt::RightDockWidgetArea);
-  // hudWidget->setTitleBarWidget(new QWidget());
-  // addDockWidget(Qt::RightDockWidgetArea, hudWidget);
-  // hudWidget->setWidget(hudPane);
-  // hudWidget->setObjectName("hud");
-
-  scopeWidget = new QDockWidget("",this);
-  scopeWidget->setFocusPolicy(Qt::NoFocus);
-  scopeWidget->setAllowedAreas(Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-  scopeWidget->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-  scopeInterface = new Scope();
-  scopeInterface->pause();
-  scopeWidget->setWidget(scopeInterface);
-  scopeWidget->setObjectName("scope");
+  scopeWidget = new Scope(this);
+  scopeWidget->pause();
   addDockWidget(Qt::RightDockWidgetArea, scopeWidget);
 
   prefsWidget = new QDockWidget(tr("Preferences"), this);
@@ -735,11 +717,11 @@ void MainWindow::updateFocusMode(){
 }
 
 void MainWindow::toggleScopePaused() {
-  scopeInterface->togglePause();
+  scopeWidget->togglePause();
 }
 
 void MainWindow::allJobsCompleted() {
-  scopeInterface->pause();
+  scopeWidget->pause();
 }
 
 void MainWindow::toggleLogVisibility() {
@@ -1280,10 +1262,10 @@ void MainWindow::initPrefsWindow() {
 
   scopeSignalMap = new QSignalMapper(this);
   QSettings settings("sonic-pi.net", "gui-settings");
-  for( auto name : scopeInterface->getScopeNames() )
+  for( auto name : scopeWidget->getScopeNames() )
   {
     QCheckBox* cb = new QCheckBox( tr(name.toLocal8Bit().data()) );
-    cb->setChecked( scopeInterface->enableScope( name, isScopeEnabled(settings,name) ) );
+    cb->setChecked( scopeWidget->enableScope( name, isScopeEnabled(settings,name) ) );
     scopeSignalMap->setMapping( cb, cb );
     scope_box_kinds_layout->addWidget(cb);
     connect(cb, SIGNAL(clicked()), scopeSignalMap, SLOT(map()));
@@ -1372,10 +1354,8 @@ void MainWindow::initPrefsWindow() {
   int stored_vol = settings.value("prefs/system-vol", 50).toInt();
   system_vol_slider->setValue(stored_vol);
 
-  //show_left_scope->setChecked( scopeInterface->enableScope( "Left", settings.value("prefs/scope/show-left", true).toBool() ) );
-  //show_right_scope->setChecked( scopeInterface->enableScope( "Right", settings.value("prefs/scope/show-right", true).toBool() ) );
-  show_scope_axes->setChecked( scopeInterface->setScopeAxes( settings.value("prefs/scope/show-axes", true).toBool() ) );
-  show_scopes->setChecked( scopeInterface->setScopeAxes( settings.value("prefs/scope/show-scopes", true).toBool() ) );
+  show_scope_axes->setChecked( scopeWidget->setScopeAxes( settings.value("prefs/scope/show-axes", true).toBool() ) );
+  show_scopes->setChecked( scopeWidget->setScopeAxes( settings.value("prefs/scope/show-scopes", true).toBool() ) );
 
   // Ensure prefs are honoured on boot
   update_mixer_invert_stereo();
@@ -1641,7 +1621,7 @@ void MainWindow::runBufferIdx(int idx)
 
 void MainWindow::runCode()
 {
-  scopeInterface->resume();
+  scopeWidget->resume();
   update();
   if(auto_indent_on_run->isChecked()) {
     beautifyCode();
@@ -1949,22 +1929,12 @@ void MainWindow::toggleScope( QWidget* qw )
   QCheckBox* cb = static_cast<QCheckBox*>(qw);
   QSettings settings("sonic-pi.net", "gui-settings");
   settings.setValue("prefs/scope/show-"+cb->text().toLower(), cb->isChecked() );
-  scopeInterface->enableScope( cb->text(), cb->isChecked() );
-}
-
-void MainWindow::toggleLeftScope()
-{
-  //scopeInterface->enableScope("Left",show_left_scope->isChecked());
-}
-
-void MainWindow::toggleRightScope()
-{
-  //scopeInterface->enableScope("Right",show_right_scope->isChecked());
+  scopeWidget->enableScope( cb->text(), cb->isChecked() );
 }
 
 void MainWindow::toggleScopeAxes()
 {
-  scopeInterface->setScopeAxes(show_scope_axes->isChecked());
+  scopeWidget->setScopeAxes(show_scope_axes->isChecked());
 }
 
 void MainWindow::toggleDarkMode() {
@@ -2391,7 +2361,7 @@ void MainWindow::updateDarkMode(){
     "}").arg(paneColor, errorBackgroundColor));
 
   scopeWidget->setStyleSheet( QString(frameStyling + qwtplotStyling));
-  scopeInterface->refresh();
+  scopeWidget->refresh();
   scopeWidget->update();
 
   for(int i=0; i < tabs->count(); i++){

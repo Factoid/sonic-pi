@@ -141,8 +141,6 @@ private slots:
     void setRPSystemAudioHDMI();
     void changeShowLineNumbers();
     void toggleScope(QWidget* qw);
-    void toggleLeftScope();
-    void toggleRightScope();
     void toggleScopeAxes();
     void toggleDarkMode();
     void updateDarkMode();
@@ -267,7 +265,7 @@ private:
     QTextBrowser *docPane;
 //  QTextBrowser *hudPane;
     QWidget *mainWidget;
-    QDockWidget *scopeWidget;
+    Scope *scopeWidget;
     bool hidingDocPane;
     bool restoreDocPane;
 
@@ -338,7 +336,6 @@ private:
     QSplitter *docsplit;
 
     QLabel *versionLabel;
-    Scope* scopeInterface;
     QString guiID;
     bool homeDirWritable, tmpFileStoreAvailable;
     bool updated_dark_mode_for_help, updated_dark_mode_for_prefs;

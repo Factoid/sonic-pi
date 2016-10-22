@@ -15,6 +15,7 @@
 #define SCOPE_H
 
 #include <QWidget>
+#include <QDockWidget>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 
@@ -73,7 +74,7 @@ private:
 };
 
 
-class Scope : public QWidget
+class Scope : public QDockWidget
 {
   Q_OBJECT
 

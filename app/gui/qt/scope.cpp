@@ -13,6 +13,7 @@
 
 #include "scope.h"
 
+#include <QPushButton>
 #include <QPaintEvent>
 #include <QResizeEvent>
 #include <QVBoxLayout>
@@ -33,12 +34,6 @@ ScopeBase::ScopeBase( const QString& name, const QString& title, QWidget* parent
 {
   QSizePolicy sp(QSizePolicy::MinimumExpanding,QSizePolicy::Expanding);
   plot.setSizePolicy(sp);
-
-  QVBoxLayout* layout = new QVBoxLayout();
-  layout->addWidget(&plot);
-  layout->setContentsMargins(0,0,0,0);
-  layout->setSpacing(0);
-  setLayout(layout);
 }
 
 ScopeBase::~ScopeBase()
@@ -135,32 +130,37 @@ void MultiScopePanel::setPen( QPen pen )
   }
 }
 
-Scope::Scope( QWidget* parent ) : QWidget(parent), paused( false ), emptyFrames(0)
+Scope::Scope( QWidget* parent ) : QDockWidget(tr("Scope"),parent), paused( false ), emptyFrames(0)
 {
   std::fill_n(sample[0],4096,0);
   std::fill_n(sample[1],4096,0);
   std::fill_n(sample_mono,4096,0);
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Lissajous", "Lissajous", sample[0]+(4096-1024), sample[1]+(4096-1024), 1024, this ) ) );
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", "Left", sample_x,sample[0],4096,this) ) );
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", "Right", sample_x,sample[1],4096, this) ) );
-//  panels.push_back( std::shared_ptr<MultiScopePanel>(new MultiScopePanel("Stereo",sample_x,sample,2,4096,this) ) );
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Mono", "Mono", sample_x,sample_mono,4096, this) ) );
+
+  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Lissajous", "Lissajous", sample[0]+(4096-1024), sample[1]+(4096-1024), 1024) ) );
+  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", "Left", sample_x,sample[0],4096) ) );
+  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", "Right", sample_x,sample[1],4096) ) );
+  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Mono", "Mono", sample_x,sample_mono,4096) ) );
   panels[0]->setPen(QPen(QColor("deeppink"), 1));
   panels[0]->setXRange( -1, 1, true );
-
+  
   for( unsigned int i = 0; i < 4096; ++i ) sample_x[i] = i;
+
   QTimer *scopeTimer = new QTimer(this);
   connect(scopeTimer, SIGNAL(timeout()), this, SLOT(drawLoop()));
   scopeTimer->start(20);
 
-  QVBoxLayout* layout = new QVBoxLayout();
+  QWidget* container = new QWidget();
+  QSizePolicy sp(QSizePolicy::MinimumExpanding,QSizePolicy::Expanding);
+  container->setSizePolicy(sp);
+  QLayout* layout = new QVBoxLayout(container);
   layout->setSpacing(0);
   layout->setContentsMargins(0,0,0,0);
   for( auto p : panels )
   {
     layout->addWidget(p.get());
   }
-  setLayout(layout);
+  setWidget(container);
+  setObjectName("scope");
 }
 
 Scope::~Scope()
@@ -190,6 +190,7 @@ bool Scope::enableScope( const QString& name, bool on )
   }
   return any ? on : true;
 }
+
 
 bool Scope::setScopeAxes(bool on)
 {
@@ -271,7 +272,6 @@ void Scope::refresh() {
     }
   }
 }
-
 
 void Scope::drawLoop() {
   // short circuit if possible
