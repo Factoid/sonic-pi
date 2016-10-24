@@ -30,10 +30,12 @@
   #include <qwt_plot_glcanvas.h>
 #endif
 
-ScopeBase::ScopeBase( const QString& name, const QString& title, QWidget* parent ) : QWidget(parent), name(name), title(title), defaultShowX(true), defaultShowY(true), plot(QwtText(name),this)
+ScopeBase::ScopeBase( const QString& name, const QString& title, QWidget* parent ) : QWidget(QwtText(name),parent), name(name), title(title), defaultShowX(true), defaultShowY(true)
 {
   QSizePolicy sp(QSizePolicy::MinimumExpanding,QSizePolicy::Expanding);
-  plot.setSizePolicy(sp);
+  setSizePolicy(sp);
+  QLayout* layout = new QVBoxLayout(this);
+  layout->addWidget(&plot);
 }
 
 ScopeBase::~ScopeBase()
@@ -136,10 +138,10 @@ Scope::Scope( QWidget* parent ) : QDockWidget(tr("Scope"),parent), paused( false
   std::fill_n(sample[1],4096,0);
   std::fill_n(sample_mono,4096,0);
 
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Lissajous", "Lissajous", sample[0]+(4096-1024), sample[1]+(4096-1024), 1024) ) );
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", "Left", sample_x,sample[0],4096) ) );
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", "Right", sample_x,sample[1],4096) ) );
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Mono", "Mono", sample_x,sample_mono,4096) ) );
+  panels.push_back( new ScopePanel("Lissajous", "Lissajous", sample[0]+(4096-1024), sample[1]+(4096-1024), 1024) );
+  panels.push_back( new ScopePanel("Stereo", "Left", sample_x,sample[0],4096) );
+  panels.push_back( new ScopePanel("Stereo", "Right", sample_x,sample[1],4096) );
+  panels.push_back( new ScopePanel("Mono", "Mono", sample_x,sample_mono,4096) );
   panels[0]->setPen(QPen(QColor("deeppink"), 1));
   panels[0]->setXRange( -1, 1, true );
   
@@ -155,9 +157,10 @@ Scope::Scope( QWidget* parent ) : QDockWidget(tr("Scope"),parent), paused( false
   QLayout* layout = new QVBoxLayout(container);
   layout->setSpacing(0);
   layout->setContentsMargins(0,0,0,0);
+
   for( auto p : panels )
   {
-    layout->addWidget(p.get());
+    layout->addWidget(p);
   }
   setWidget(container);
   setObjectName("scope");

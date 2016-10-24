@@ -26,7 +26,7 @@
 class QPaintEvent;
 class QResizeEvent;
 
-class ScopeBase : public QWidget
+class ScopeBase : public QwtPlot
 {
   Q_OBJECT
 public:
@@ -100,7 +100,7 @@ private:
   double sample[2][4096];
   double sample_mono[4096];
   scope_buffer_reader shmReader;
-  std::vector<std::shared_ptr<ScopeBase>> panels;
+  std::vector<ScopeBase*> panels;
   bool paused;
   unsigned int emptyFrames;
 };
