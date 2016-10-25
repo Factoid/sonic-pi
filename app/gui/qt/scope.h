@@ -44,9 +44,6 @@ public:
 private:
   QString name,title;
   bool defaultShowX, defaultShowY;
-
-protected:
-  QwtPlot plot;
 };
 
 

@@ -30,12 +30,10 @@
   #include <qwt_plot_glcanvas.h>
 #endif
 
-ScopeBase::ScopeBase( const QString& name, const QString& title, QWidget* parent ) : QWidget(QwtText(name),parent), name(name), title(title), defaultShowX(true), defaultShowY(true)
+ScopeBase::ScopeBase( const QString& name, const QString& title, QWidget* parent ) : QwtPlot(QwtText(name),parent), name(name), title(title), defaultShowX(true), defaultShowY(true)
 {
   QSizePolicy sp(QSizePolicy::MinimumExpanding,QSizePolicy::Expanding);
   setSizePolicy(sp);
-  QLayout* layout = new QVBoxLayout(this);
-  layout->addWidget(&plot);
 }
 
 ScopeBase::~ScopeBase()
@@ -46,36 +44,36 @@ const QString& ScopeBase::getName() { return name; }
 
 void ScopeBase::setYRange( float min, float max, bool showLabel )
 {
-  plot.setAxisScale( QwtPlot::Axis::yLeft, min, max );
-  plot.enableAxis( QwtPlot::Axis::yLeft, showLabel );
+  setAxisScale( QwtPlot::Axis::yLeft, min, max );
+  enableAxis( QwtPlot::Axis::yLeft, showLabel );
   defaultShowY = showLabel;
 }
 
 void ScopeBase::setXRange( float min, float max, bool showLabel )
 {
-  plot.setAxisScale( QwtPlot::Axis::xBottom, min, max );
-  plot.enableAxis( QwtPlot::Axis::xBottom, showLabel );
+  setAxisScale( QwtPlot::Axis::xBottom, min, max );
+  enableAxis( QwtPlot::Axis::xBottom, showLabel );
   defaultShowX = showLabel;
 }
 
 bool ScopeBase::setAxesVisible(bool b)
 {
-  plot.enableAxis(QwtPlot::Axis::yLeft,b && defaultShowY );
-  plot.enableAxis(QwtPlot::Axis::xBottom,b && defaultShowX );
+  enableAxis(QwtPlot::Axis::yLeft,b && defaultShowY );
+  enableAxis(QwtPlot::Axis::xBottom,b && defaultShowX );
   if( b )
   {
-    plot.setTitle(QwtText(title));
+    setTitle(QwtText(title));
   } else
   {
-    plot.setTitle(QwtText(""));
+    setTitle(QwtText(""));
   }
   return b;
 }
 
 void ScopeBase::refresh( )
 {
-  if( !plot.isVisible() ) return;
-  plot.replot();
+  if( !isVisible() ) return;
+  replot();
 }
 
 ScopePanel::ScopePanel( const QString& name, const QString& title, double* sample_x, double* sample_y, int num_samples, QWidget* parent ) : ScopeBase(name,title,parent)
@@ -84,8 +82,8 @@ ScopePanel::ScopePanel( const QString& name, const QString& title, double* sampl
 #if defined(Q_OS_WIN)
   // enable OpenGL rendering on all platforms except Raspberry Pi
   // and Mac (as there are docking/undockign issues to be resolved)
-
-  plot.setCanvas( new QwtPlotGLCanvas() );
+  // which is assumed to be Linux + Qt 4
+  setCanvas( new QwtPlotGLCanvas() );
 #endif
 
 #if QWT_VERSION >= 0x60100
@@ -97,7 +95,7 @@ ScopePanel::ScopePanel( const QString& name, const QString& title, double* sampl
   setYRange( -1, 1, true );
   setPen(QPen(QColor("deeppink"), 2));
 
-  plot_curve.attach(&plot);
+  plot_curve.attach(this);
 }
 
 void ScopePanel::setPen( QPen pen )
@@ -115,7 +113,7 @@ MultiScopePanel::MultiScopePanel( const QString& name, const QString& title, dou
 #endif
 
     curve->setRawSamples( sample_x, samples_y[i], 4096 );
-    curve->attach(&plot);
+    curve->attach(this);
     curves.push_back( std::shared_ptr<QwtPlotCurve>(curve) );
   }
 
