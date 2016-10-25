@@ -83,7 +83,7 @@ ScopePanel::ScopePanel( const QString& name, const QString& title, double* sampl
   // enable OpenGL rendering on all platforms except Raspberry Pi
   // and Mac (as there are docking/undockign issues to be resolved)
   // which is assumed to be Linux + Qt 4
-  setCanvas( new QwtPlotGLCanvas() );
+  //setCanvas( new QwtPlotGLCanvas() );
 #endif
 
 #if QWT_VERSION >= 0x60100
