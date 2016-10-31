@@ -140,11 +140,11 @@ Scope::Scope( QWidget* parent ) : QWidget(parent), paused( false ), emptyFrames(
   std::fill_n(sample[0],4096,0);
   std::fill_n(sample[1],4096,0);
   std::fill_n(sample_mono,4096,0);
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Lissajous", "Lissajous", sample[0]+(4096-1024), sample[1]+(4096-1024), 1024, this ) ) );
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", "Left", sample_x,sample[0],4096,this) ) );
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", "Right", sample_x,sample[1],4096, this) ) );
+  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Lissajous", tr("Lissajous"), sample[0]+(4096-1024), sample[1]+(4096-1024), 1024, this ) ) );
+  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", tr("Left"), sample_x,sample[0],4096,this) ) );
+  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", tr("Right"), sample_x,sample[1],4096, this) ) );
 //  panels.push_back( std::shared_ptr<MultiScopePanel>(new MultiScopePanel("Stereo",sample_x,sample,2,4096,this) ) );
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Mono", "Mono", sample_x,sample_mono,4096, this) ) );
+  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Mono", tr("Mono"), sample_x,sample_mono,4096, this) ) );
   panels[0]->setPen(QPen(QColor("deeppink"), 1));
   panels[0]->setXRange( -1, 1, true );
 
