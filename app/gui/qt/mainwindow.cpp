@@ -1958,16 +1958,6 @@ void MainWindow::toggleScope( QWidget* qw )
   scopeInterface->enableScope( cb->text(), cb->isChecked() );
 }
 
-void MainWindow::toggleLeftScope()
-{
-  //scopeInterface->enableScope("Left",show_left_scope->isChecked());
-}
-
-void MainWindow::toggleRightScope()
-{
-  //scopeInterface->enableScope("Right",show_right_scope->isChecked());
-}
-
 void MainWindow::toggleScopeAxes()
 {
   scopeInterface->setScopeAxes(show_scope_axes->isChecked());
@@ -2631,8 +2621,6 @@ void MainWindow::writeSettings()
   settings.setValue("windowState", saveState());
   settings.setValue("windowGeom", saveGeometry());
 
-  //settings.setValue("prefs/scope/show-left", show_left_scope->isChecked() );
-  //settings.setValue("prefs/scope/show-right", show_right_scope->isChecked() );
   settings.setValue("prefs/scope/show-axes", show_scope_axes->isChecked() );
   settings.setValue("prefs/scope/show-scopes", show_scopes->isChecked() );
 }

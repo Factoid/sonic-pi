@@ -141,8 +141,6 @@ private slots:
     void setRPSystemAudioHDMI();
     void changeShowLineNumbers();
     void toggleScope(QWidget* qw);
-    void toggleLeftScope();
-    void toggleRightScope();
     void toggleScopeAxes();
     void toggleDarkMode();
     void updateDarkMode();
