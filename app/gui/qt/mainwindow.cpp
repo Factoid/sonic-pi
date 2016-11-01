@@ -1286,10 +1286,10 @@ void MainWindow::initPrefsWindow() {
 
   scopeSignalMap = new QSignalMapper(this);
   QSettings settings("sonic-pi.net", "gui-settings");
-  for( auto name : scopeInterface->getScopeNames() )
+  for( auto sg : scopeInterface->getScopeGroups() )
   {
-    QCheckBox* cb = new QCheckBox( tr(name.toLocal8Bit().data()) );
-    cb->setChecked( scopeInterface->enableScope( name, isScopeEnabled(settings,name) ) );
+    QCheckBox* cb = new QCheckBox( sg.getName() );
+    cb->setChecked( scopeInterface->enableScope( sg.getId(), isScopeEnabled(settings, sg.getId() ) ) );
     scopeSignalMap->setMapping( cb, cb );
     scope_box_kinds_layout->addWidget(cb);
     connect(cb, SIGNAL(clicked()), scopeSignalMap, SLOT(map()));

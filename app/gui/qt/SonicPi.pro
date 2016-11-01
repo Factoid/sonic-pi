@@ -22,17 +22,6 @@ CONFIG += qscintilla2 qwt c++11
 
 QT += core gui concurrent network opengl
 
-include ( /usr/local/qwt-6.1.2/features/qwt.prf )
-LIBS += -L/Users/sam/Development/Supercollider/git-src/external_libraries/boost/libs
-INCLUDEPATH += /Users/sam/Development/Supercollider/git-src/external_libraries/boost/
-DEPENDPATH += /Users/sam/Development/Supercollider/git-src/external_libraries/boost/
-
-LIBS += -L/Users/sam/Downloads/tmp/QScintilla_gpl-2.9.3.dev1606101834/Qt4Qt5
-
-INCLUDEPATH += /Users/sam/Downloads/tmp/QScintilla_gpl-2.9.3.dev1606101834/Qt4Qt5
-DEPENDPATH += /Users/sam/Downloads/tmp/QScintilla_gpl-2.9.3.dev1606101834/Qt4Qt5
-QMAKE_MAC_SDK = macosx10.11
-
 greaterThan(QT_MAJOR_VERSION, 4) {
   QT += widgets
 }

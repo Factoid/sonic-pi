@@ -72,6 +72,18 @@ private:
   std::vector<std::shared_ptr<QwtPlotCurve>> curves;
 };
 
+class ScopeGroup : public std::vector<std::shared_ptr<ScopeBase>>
+{
+  QString displayName;
+  QString id;
+
+public:
+  QString getName() const;
+  QString getId() const;
+
+  ScopeGroup( const QString& id, const QString& name );
+  void enable( bool on );
+};
 
 class Scope : public QWidget
 {
@@ -81,7 +93,8 @@ public:
   Scope( QWidget* parent = 0 );
   virtual ~Scope();
 
-  std::vector<QString> getScopeNames() const;
+  //std::vector<QString> getScopeNames() const;
+  const std::vector<ScopeGroup>& getScopeGroups() const;
   bool enableScope( const QString& name, bool on );
   bool setScopeAxes(bool on);
   void togglePause();
@@ -99,7 +112,8 @@ private:
   double sample[2][4096];
   double sample_mono[4096];
   scope_buffer_reader shmReader;
-  std::vector<std::shared_ptr<ScopeBase>> panels;
+//  std::vector<std::shared_ptr<ScopeBase>> panels;
+  std::vector<ScopeGroup> panels;
   bool paused;
   unsigned int emptyFrames;
 };

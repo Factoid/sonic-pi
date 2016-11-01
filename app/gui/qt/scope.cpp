@@ -135,18 +135,38 @@ void MultiScopePanel::setPen( QPen pen )
   }
 }
 
+ScopeGroup::ScopeGroup( const QString& id, const QString& title ) : displayName(title), id(id)
+{
+} 
+
+QString ScopeGroup::getName() const
+{
+  return displayName;
+}
+
+QString ScopeGroup::getId() const
+{
+  return id;
+}
+
 Scope::Scope( QWidget* parent ) : QWidget(parent), paused( false ), emptyFrames(0)
 {
   std::fill_n(sample[0],4096,0);
   std::fill_n(sample[1],4096,0);
   std::fill_n(sample_mono,4096,0);
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Lissajous", tr("Lissajous"), sample[0]+(4096-1024), sample[1]+(4096-1024), 1024, this ) ) );
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", tr("Left"), sample_x,sample[0],4096,this) ) );
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", tr("Right"), sample_x,sample[1],4096, this) ) );
+  ScopeGroup lj( "lissajous", tr("Lissajous") );
+  ScopeGroup st( "stereo", tr("Stereo") );
+  ScopeGroup mo( "mono", tr("Mono") );
+  panels.push_back( lj );
+//  panels.push_back( st );
+  panels.push_back( mo );
+//  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Lissajous", tr("Lissajous"), sample[0]+(4096-1024), sample[1]+(4096-1024), 1024, this ) ) );
+//  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", tr("Left"), sample_x,sample[0],4096,this) ) );
+//  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Stereo", tr("Right"), sample_x,sample[1],4096, this) ) );
 //  panels.push_back( std::shared_ptr<MultiScopePanel>(new MultiScopePanel("Stereo",sample_x,sample,2,4096,this) ) );
-  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Mono", tr("Mono"), sample_x,sample_mono,4096, this) ) );
-  panels[0]->setPen(QPen(QColor("deeppink"), 1));
-  panels[0]->setXRange( -1, 1, true );
+//  panels.push_back( std::shared_ptr<ScopePanel>(new ScopePanel("Mono", tr("Mono"), sample_x,sample_mono,4096, this) ) );
+//  panels[0]->setPen(QPen(QColor("deeppink"), 1));
+//  panels[0]->setXRange( -1, 1, true );
 
   for( unsigned int i = 0; i < 4096; ++i ) sample_x[i] = i;
   QTimer *scopeTimer = new QTimer(this);
@@ -156,10 +176,10 @@ Scope::Scope( QWidget* parent ) : QWidget(parent), paused( false ), emptyFrames(
   QVBoxLayout* layout = new QVBoxLayout();
   layout->setSpacing(0);
   layout->setContentsMargins(0,0,0,0);
-  for( auto p : panels )
-  {
-    layout->addWidget(p.get());
-  }
+//  for( auto p : panels )
+//  {
+//    layout->addWidget(p.get());
+//  }
   setLayout(layout);
 }
 
@@ -167,36 +187,33 @@ Scope::~Scope()
 {
 }
 
-std::vector<QString> Scope::getScopeNames() const
+const std::vector<ScopeGroup>& Scope::getScopeGroups() const
 {
-  std::set<QString> names;
-  for( auto scope : panels )
-  {
-    names.insert(scope->getName());
-  }
-  return std::vector<QString>(names.begin(),names.end());
+  return panels;
 }
 
 bool Scope::enableScope( const QString& name, bool on )
 {
   bool any = false;
-  for( auto scope : panels )
-  {
-    if( scope->getName() == name )
-    {
-      scope->setVisible(on);
-      any = true;
-    }
-  }
+//  for( auto scope : panels )
+//  {
+//    if( scope->getName() == name )
+//    {
+//      scope->setVisible(on);
+//      any = true;
+//    }
+//  }
   return any ? on : true;
 }
 
 bool Scope::setScopeAxes(bool on)
 {
+/*
   for( auto scope : panels )
   {
     scope->setAxesVisible(on);
   }
+*/
   return on;
 }
 
@@ -257,10 +274,12 @@ void Scope::refresh() {
       }
     }
 
+/*
     for( auto scope : panels )
     {
       scope->refresh();
     }
+*/
   } else
   {
     ++emptyFrames;
